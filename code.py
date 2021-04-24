@@ -1,17 +1,15 @@
-from time import sleep
-
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import vk_api.keyboard
 import random
 import sqlite3
-import datetime
 
 db = 'db/database.db'
 con = sqlite3.connect(db)
 cur = con.cursor()
 vk_session = vk_api.VkApi(
-    token='4ebc1ec9ad7258c37d00147cb33ff562caab9ce16593a9df22e294538feb86c1d043b6dd24ce7951a64ec')
+    token='4ebc1ec9ad7258c37d00147cb33ff562caab9ce165'
+          '93a9df22e294538feb86c1d043b6dd24ce7951a64ec')
 vk = vk_session.get_api()
 
 
@@ -31,17 +29,27 @@ def get_money(user, event):
 def get_businesses(user, event):
     query = f"SELECT * FROM businesses WHERE user_id = {user['id']}"
     res = cur.execute(query).fetchall()
-    kb_send(f'киоск (1). У вас -  {res[0][1]}\n штук.\nСтоит - 100 копеек\n Приносит -  1 коп/мин\n\n'
-         f'магазин (2). У вас -  {res[0][2]}\n штук.\nСтоит - 950 копеек\n Приносит -  11 коп/мин\n\n'
-         f'кинотеатр (3). У вас -  {res[0][3]}\n штук.\nСтоит - 9.000 копеек\n Приносит -  120 коп/мин\n\n'
-         f'малый торговый центр (4). У вас -  {res[0][4]}\n штук.\nСтоит - 85.000 копеек\n Приносит -  1.300 коп/мин\n\n'
-         f'сеть магазинов (5). У вас -  {res[0][5]}\n штук.\nСтоит - 800.000 копеек\n Приносит -  14.000 коп/мин\n\n'
-         f'популярная игра (6). У вас -  {res[0][6]}\n штук.\nСтоит - 7.500.000 копеек\n Приносит -  150.000 коп/мин\n\n'
-         f'завод (7). У вас -  {res[0][7]}\n штук.\nСтоит - 70.000.000 копеек\n Приносит -  1.600.000 коп/мин\n\n'
-         f'гиганский торговый центр (8). У вас -  {res[0][8]}\n штук.\nСтоит - 650.000.000 копеек\n Приносит -  17.000.000 коп/мин\n\n'
-         f'сеть заводов (9). У вас -  {res[0][9]}\n штук.\nСтоит - 6.000.000.000 копеек\n Приносит -  180.000.000 коп/мин\n\n'
-         f'Прошел игру. Стоит - 100.000.000.000 копеек\n Приносит -  бесконечность коп/мин\n\n'
-         f'ваш заработок: {res[0][-1]}', event, main_menu_keyboard())
+    kb_send(f'киоск (1). У вас -  {res[0][1]}\n штук.\nСтоит - 100 копеек\n'
+            f' Приносит -  1 коп/мин\n\n'
+            f'магазин (2). У вас -  {res[0][2]}\n штук.\nСтоит - 950 копеек\n'
+            f' Приносит -  11 коп/мин\n\n'
+            f'кинотеатр (3). У вас -  {res[0][3]}\n штук.\nСтоит - 9.000 копеек\n'
+            f' Приносит -  120 коп/мин\n\n'
+            f'малый торговый центр (4). У вас -  {res[0][4]}\n штук.'
+            f'\nСтоит - 85.000 копеек\n Приносит -  1.300 коп/мин\n\n'
+            f'сеть магазинов (5). У вас -  {res[0][5]}\n штук.\nСтоит - 800.000 копеек\n'
+            f' Приносит -  14.000 коп/мин\n\n'
+            f'популярная игра (6). У вас -  {res[0][6]}\n штук.'
+            f'\nСтоит - 7.500.000 копеек\n Приносит -  150.000 коп/мин\n\n'
+            f'завод (7). У вас -  {res[0][7]}\n штук.\nСтоит - 70.000.000 копеек\n'
+            f' Приносит -  1.600.000 коп/мин\n\n'
+            f'гиганский торговый центр (8). У вас -  {res[0][8]}\n штук.'
+            f'\nСтоит - 650.000.000 копеек\n Приносит -  17.000.000 коп/мин\n\n'
+            f'сеть заводов (9). У вас -  {res[0][9]}\n штук.'
+            f'\nСтоит - 6.000.000.000 копеек\n Приносит -  180.000.000 коп/мин\n\n'
+            f'Прошел игру. Стоит - 100.000.000.000 копеек\n'
+            f' Приносит -  бесконечность коп/мин\n\n'
+            f'ваш заработок: {res[0][-1]}', event, main_menu_keyboard())
 
 
 def business_buying_keyboard():
@@ -100,7 +108,8 @@ def start_game(user, event):
     print()
     print(f'Пользователь {user_name} Начал играть!')
     send(f'Привет,{user_name}, давай начнем игру!', event)
-    query = f"INSERT INTO user_info(id, username, money, businesses_id) VALUES({user['id']}," \
+    query = f"INSERT INTO user_info(id, username, money, businesses_id)" \
+            f" VALUES({user['id']}," \
             f" '{user_name}', 100, {user['id']})"
     cur.execute(query).fetchall()
     query = f"INSERT INTO businesses(user_id, lvl1, lvl2, lvl3, lvl4, lvl5," \
@@ -111,7 +120,7 @@ def start_game(user, event):
     get_money(user, event)
     get_businesses(user, event)
     kb_send('список команд: старт, деньги, бизнесы, купить (название), '
-         'продать (название).', event, main_menu_keyboard())
+            'продать (название).', event, main_menu_keyboard())
 
 
 def business_buy(business, user, event):
@@ -221,7 +230,8 @@ def business_buy(business, user, event):
             send('Сожалею, но у вас не хватает денег(', event)
     elif business == 8:
         if res[0][0] >= 650000000:
-            query = f"UPDATE user_info SET money = money - 650000000 WHERE id={user['id']}"
+            query = f"UPDATE user_info SET money" \
+                    f" = money - 650000000 WHERE id={user['id']}"
             cur.execute(query)
             kb_send('Спасибо за покупку!', event, main_menu_keyboard())
             query = f"UPDATE businesses SET lvl8 = lvl8 + 1" \
@@ -235,7 +245,8 @@ def business_buy(business, user, event):
             send('Сожалею, но у вас не хватает денег(', event)
     elif business == 8:
         if res[0][0] >= 6000000000:
-            query = f"UPDATE user_info SET money = money - 6000000000 WHERE id={user['id']}"
+            query = f"UPDATE user_info SET money" \
+                    f" = money - 6000000000 WHERE id={user['id']}"
             cur.execute(query)
             kb_send('Спасибо за покупку!', event, main_menu_keyboard())
             query = f"UPDATE businesses SET lvl9 = lvl9 + 1" \
@@ -260,7 +271,6 @@ def main():
             user_id = event.obj.message['from_id']
             user = vk.users.get(user_id=user_id)[0]
             get_msg_info(user, event)
-            send("Бот пока в стадии разработки, но я обязательно доделаю его!", event)
             if msg['text'].lower() == 'старт':
                 start_game(user, event)
             if msg['text'].lower() == 'деньги':
@@ -270,7 +280,8 @@ def main():
             if 'купить' in msg['text'].lower():
                 if len(msg['text'].lower().split()) < 2:
                     get_businesses(user, event)
-                    kb_send('укажите номер бизнеса! (он указан в скобках)', event, business_buying_keyboard())
+                    kb_send('укажите номер бизнеса! (он указан в скобках)', event,
+                            business_buying_keyboard())
                 else:
                     business_buy(msg['text'].lower().split()[1], user, event)
 
