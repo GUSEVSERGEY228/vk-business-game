@@ -135,31 +135,28 @@ def send_help(event):
 
 
 def start_game(user, event):
-    try:
-        user_name = f"{user['first_name']} {user['last_name']}"
+    user_name = f"{user['first_name']} {user['last_name']}"
+    if "'" in user_name:
+        user_name = user_name.replace("'", '')
 
-        query = f"INSERT INTO user_info(id, username, money, businesses_id)" \
-                f" VALUES({user['id']}," \
-                f" '{user_name}', 100, {user['id']})"
-        try:
-            cur.execute(query).fetchall()
-        except sqlite3.OperationalError:
-            print(f"\n\nЗанесите пользователя с id {user['id']} в базу данных вручную!\n\n")
-            return
-        query = f"INSERT INTO businesses(user_id, lvl1, lvl2, lvl3, lvl4, lvl5," \
-                f" lvl6, lvl7, lvl8, lvl9, game_finished, profit)" \
-                f" VALUES({user['id']}, 0, 0, 0, 0, 0, 0, 0, 0, 0, False, 0)"
+    query = f"INSERT INTO user_info(id, username, money, businesses_id)" \
+            f" VALUES({user['id']}," \
+            f" '{user_name}', 100, {user['id']})"
+    try:
         cur.execute(query).fetchall()
-        con.commit()
-        print()
-        print(f'Пользователь {user_name} Начал играть!')
-        send(f'Привет,{user_name}, давай начнем игру!', event)
-        get_money(user, event)
-        get_businesses(user, event)
-    except sqlite3.IntegrityError:
-        kb_send('Если хотите начать игру еще раз, напишите 1-му из администраторов:'
-                '\nhttps://vk.com/idomg228\nhttps://vk.com/meeeeeedic',
-                event, main_menu_keyboard())
+    except sqlite3.OperationalError:
+        print(f"\n\nЗанесите пользователя с id {user['id']} в базу данных вручную!\n\n")
+        return
+    query = f"INSERT INTO businesses(user_id, lvl1, lvl2, lvl3, lvl4, lvl5," \
+            f" lvl6, lvl7, lvl8, lvl9, game_finished, profit)" \
+            f" VALUES({user['id']}, 0, 0, 0, 0, 0, 0, 0, 0, 0, False, 0)"
+    cur.execute(query).fetchall()
+    con.commit()
+    print()
+    print(f'Пользователь {user_name} Начал играть!')
+    send(f'Привет,{user_name}, давай начнем игру!', event)
+    get_money(user, event)
+    get_businesses(user, event)
 
 
 def business_sell(business, user, event):
@@ -350,7 +347,7 @@ def business_buy(business, user, event):
                     f" WHERE user_id={user['id']}"
             cur.execute(query)
         else:
-            kb_send('Спасибо за покупку!', event, main_menu_keyboard())
+            kb_send('Сожалею, но у вас не хватает денег(', event, main_menu_keyboard())
     elif business == 4:
         if res[0][0] >= 85000:
             query = f"UPDATE user_info SET money = money - 85000 WHERE id={user['id']}"
